@@ -122,5 +122,5 @@ class DeleteChannels(ActionChannelSubcommand):
 
 
 class ArchiveChannels(ActionChannelSubcommand):
-    SLACK_API_METHOD = 'channels.archive'
+    SLACK_API_METHOD = 'conversations.archive'
     TITLE_MESSAGE = 'Archiving Channels'

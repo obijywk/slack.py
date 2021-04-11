@@ -64,6 +64,8 @@ class HighLevelSlackClient(object):
         fail = kwargs.setdefault('fail', True)
         del kwargs['fail']
 
+        kwargs.setdefault('limit', 1000)
+
         resp = self._client.api_call(method, **kwargs)
 
         if not resp['ok'] and fail:
@@ -77,7 +79,7 @@ class HighLevelSlackClient(object):
 
     @filtered
     def channels(self, **kwargs):
-        resp = self.__request('channels.list', **kwargs)
+        resp = self.__request('conversations.list', **kwargs)
 
         for channel in resp['channels']:
             for filter in self.filters.values():
