@@ -66,10 +66,24 @@ class HighLevelSlackClient(object):
 
         kwargs.setdefault('limit', 1000)
 
-        resp = self._client.api_call(method, **kwargs)
+        resps = []
+        while True:
+            resp = self._client.api_call(method, **kwargs)
+            resps.append(resp)
+            if not resp['ok'] and fail:
+                raise FailedRequestException('`{}` request failed'.format(method))
+            if not resp['ok']:
+                break
+            if not resp.get('response_metadata'):
+                break
+            if not resp['response_metadata'].get('next_cursor'):
+                break
+            kwargs['cursor'] = resp['response_metadata']['next_cursor']
 
-        if not resp['ok'] and fail:
-            raise FailedRequestException('`{}` request failed'.format(method))
+        resp = resps[0]
+        for r in resps[1:]:
+            if resp.get('channels') and r.get('channels'):
+                resp['channels'].extend(r['channels'])
 
         return resp
 
